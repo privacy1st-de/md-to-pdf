@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+SCRIPT_TITLE=md-to-pdf
+depends=(chromium cmark-gfm)
+optdepends=()
+
+# Uncomment for debugging:
+exec 1> "${HOME}"/"${SCRIPT_TITLE}".log 2>&1
+set -x
+
+#######
+
+
+function command_exists(){
+  command -v "$1" > /dev/null
+}
+
+function notify() {
+  # $1: Message summary
+  # $2: Message body
+  # $3-n: notify-send options
+
+  if command_exists notify-send; then
+    notify-send "$@";
+  else
+    # Write message to stderr
+    printf '%s: %s\n' "$1" "$2" 1>&2;
+  fi
+}
+
+function check_depends() {
+  for dep in "${depends[@]}"; do
+    if ! command_exists "${dep}"; then
+      notify "${SCRIPT_TITLE}" "The dependency ${dep} is missing!" --icon=dialog-information;
+      exit 1;
+    fi
+  done
+
+  for dep in "${optdepends[@]}"; do
+    if ! command_exists "${dep}"; then
+      # Inform about missing opt. dependency on /dev/stderr
+      printf 'Info: The optional dependency %s is missing.' "${dep}" 1>&2;
+    fi
+  done
+}
+
+check_depends
+
+# read newline-delimited absolute paths of selected files (on local filesystem)
+echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | while read file; do
+  # If $NAUTILUS_SCRIPT_SELECTED_FILE_PATHS contains a tailing newline,
+  # $file may be the empty string
+  if [ "${file}" = '' ]; then
+    continue;
+  fi
+
+  html="${file}".html;
+  pdf="${file}".pdf;
+
+  # Convert
+  cmark-gfm "${file}" --to html --unsafe > "${html}" || notify "${SCRIPT_TITLE}" "Conversion of ${file} to html failed!" --icon=dialog-information;
+  chromium --headless --disable-gpu --print-to-pdf="${pdf}" file://"${html}" || notify "${SCRIPT_TITLE}" "Conversion of ${html} to pdf failed!" --icon=dialog-information;
+
+  # Cleanup
+  rm "${html}" || notify "${SCRIPT_TITLE}" "Could not delete intermediate file ${html}!" --icon=dialog-information;
+done
+
+notify "${SCRIPT_TITLE}" 'Done!' --icon=dialog-information;
