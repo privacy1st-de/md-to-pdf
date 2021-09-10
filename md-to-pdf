@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 SCRIPT_TITLE=md-to-pdf
-depends=(chromium cmark-gfm)
+# depends=(chromium cmark-gfm)
+depends=(ungoogled-chromium cmark-gfm)
 optdepends=()
 
 # Uncomment for debugging:
