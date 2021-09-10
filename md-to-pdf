@@ -2,7 +2,7 @@
 
 SCRIPT_TITLE=md-to-pdf
 depends=(chromium cmark-gfm)  # 'chromium' is e.g. provided by the package 'ungoogled-chromium'
-optdepends=()
+optdepends=(notify-send)
 
 # Uncomment for debugging:
 exec 1> "${HOME}"/"${SCRIPT_TITLE}".log 2>&1
