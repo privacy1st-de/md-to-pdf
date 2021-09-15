@@ -8,7 +8,7 @@ optdepends=(notify-send de-p1st-image-width-limit)
 exec 1> "${HOME}"/"${SCRIPT_TITLE}".log 2>&1
 set -x
 
-#######
+####### ####### #######
 
 
 function command_exists(){
@@ -56,6 +56,9 @@ function modify_html() {
     de-p1st-image-width-limit "${file}" || notify "${SCRIPT_TITLE}" "Could not modify ${html}!" --icon=dialog-information;
   fi
 }
+
+####### ####### #######
+
 
 check_depends
 
