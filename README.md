@@ -10,7 +10,8 @@ As an example, one can have a look at this README file converted to pdf: [README
 
 ## The conversion process
 
-At first the Markdown is converted to HTML with `cmark-gfm`. Then `chromium` is used to print the HTML to pdf.
+At first the Markdown is converted to HTML with `cmark-gfm`. Then the HTML file is modified so that large
+images fit on the PDF. Finally `wkhtmltopdf` converts HTML to pdf.
 
 ## Alternatives conversion methods
 
