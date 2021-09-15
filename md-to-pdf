@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 SCRIPT_TITLE=md-to-pdf
-depends=(chromium cmark-gfm)  # 'chromium' is e.g. provided by the package 'ungoogled-chromium'
-optdepends=(notify-send)
+depends=(wkhtmltopdf cmark-gfm)  # 'wkhtmltopdf' with qt-error is e.g. provided by the package 'wkhtmltopdf-static'
+optdepends=(notify-send de-p1st-image-width-limit)
 
 # Uncomment for debugging:
 exec 1> "${HOME}"/"${SCRIPT_TITLE}".log 2>&1
@@ -44,6 +44,19 @@ function check_depends() {
   done
 }
 
+function modify_html() {
+  # Images should be no wider than 700px, otherwise they may be only partially visible.
+  # This method adds a style attribute to HTML image tags to limit their size.
+  #
+  # in: path to HTML file
+  # out: None. The given HTML file will be modified.
+  file="${1}"
+
+  if command_exists 'de-p1st-image-width-limit'; then
+    de-p1st-image-width-limit "${file}" || notify "${SCRIPT_TITLE}" "Could not modify ${html}!" --icon=dialog-information;
+  fi
+}
+
 check_depends
 
 # read newline-delimited absolute paths of selected files (on local filesystem)
@@ -56,10 +69,25 @@ echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | while read file; do
 
   html="${file}".html;
   pdf="${file}".pdf;
+  parent_dir="$(dirname "${file}")"
 
   # Convert
   cmark-gfm "${file}" --to html --unsafe > "${html}" || notify "${SCRIPT_TITLE}" "Conversion of ${file} to html failed!" --icon=dialog-information;
   chromium --headless --disable-gpu --print-to-pdf="${pdf}" file://"${html}" || notify "${SCRIPT_TITLE}" "Conversion of ${html} to pdf failed!" --icon=dialog-information;
+
+  modify_html "${html}"
+
+  # https://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+  wkhtmltopdf \
+    --page-size A4 \
+    --allow "${parent_dir}" `# We assume that all referenced images are located in the same directory` \
+                            `# or in a subdirectory of the html file` \
+    --encoding UTF-8 \
+    --outline \
+    --orientation Portrait \
+    --footer-center '[Page]' `# Adds page numbers` \
+    '--disable-smart-shrinking' \
+    "${html}" "${pdf}" || notify "${SCRIPT_TITLE}" "Conversion of ${html} to pdf failed!" --icon=dialog-information;
 
   # Cleanup
   rm "${html}" || notify "${SCRIPT_TITLE}" "Could not delete intermediate file ${html}!" --icon=dialog-information;

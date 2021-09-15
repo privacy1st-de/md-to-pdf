@@ -1,5 +1,21 @@
 #!/usr/bin/env bash
 
+function convert0(){
+  file="${1}"
+
+  html="${file}".html;
+  pdf="${file}".pdf;
+
+  # depends=(chromium cmark-gfm)  # 'chromium' is e.g. provided by the package 'ungoogled-chromium'
+
+  # Convert
+  cmark-gfm "${file}" --to html --unsafe > "${html}"
+  chromium --headless --disable-gpu --print-to-pdf="${pdf}" file://"${html}"
+
+  # Cleanup
+  rm "${html}"
+}
+
 function convert1(){
   md="${1}"
   out="${md}".pdf
