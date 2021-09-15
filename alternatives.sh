@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
 function convert0(){
+  # Same as the current process (in md-to-pdf), but using WeasyPrint instead of wkhtmltopdf.
+  # -> https://github.com/Kozea/WeasyPrint/
+  return 0
+}
+
+function convert1(){
   file="${1}"
 
   html="${file}".html;
@@ -16,7 +22,7 @@ function convert0(){
   rm "${html}"
 }
 
-function convert1(){
+function convert2(){
   md="${1}"
   out="${md}".pdf
 
@@ -39,7 +45,7 @@ function convert1(){
     -V 'geometry:margin=1.5cm'
 }
 
-function convert2(){
+function convert3(){
   md="${1}"
 
   # * https://www.npmjs.com/package/markdown-pdf
