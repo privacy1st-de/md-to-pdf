@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SCRIPT_TITLE=md-to-pdf
-depends=(wkhtmltopdf cmark-gfm)  # 'wkhtmltopdf' is provided by 'wkhtmltopdf-static'
+depends=(wkhtmltopdf cmark-gfm chromium)  # 'wkhtmltopdf' is provided by 'wkhtmltopdf-static'
 optdepends=(notify-send de-p1st-image-width-limit)  # 'notify-send' is provided by 'libnotify'
 
 # Uncomment for debugging:
