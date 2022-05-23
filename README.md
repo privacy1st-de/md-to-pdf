@@ -15,4 +15,4 @@ images fit on the PDF. Finally `wkhtmltopdf` converts HTML to pdf.
 
 ## Alternatives conversion methods
 
-see [alternatives.sh](alternatives.sh)
+See [alternatives.sh](alternatives.sh).
